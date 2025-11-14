@@ -1,0 +1,41 @@
+/* -- */
+
+#if os(visionOS)
+import Foundation
+
+internal import LiveKitWebRTC
+
+@objc
+public final class ARCameraCaptureOptions: NSObject, VideoCaptureOptions, Sendable {
+    @objc
+    public let dimensions: Dimensions
+
+    @objc
+    public let fps: Int
+
+    public init(dimensions: Dimensions = .h1080_169, fps: Int = 30) {
+        self.dimensions = dimensions
+        self.fps = fps
+    }
+
+    public init(from options: ScreenShareCaptureOptions) {
+        dimensions = options.dimensions
+        fps = options.fps
+    }
+
+    // MARK: - Equal
+
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? Self else { return false }
+        return dimensions == other.dimensions &&
+            fps == other.fps
+    }
+
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(dimensions)
+        hasher.combine(fps)
+        return hasher.finalize()
+    }
+}
+#endif

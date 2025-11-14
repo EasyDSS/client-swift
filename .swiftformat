@@ -1,0 +1,4 @@
+--exclude Sources/EasyRTC/Protos
+--header "/* -- */"
+--ifdef no-indent
+--disable modifiersOnSameLine

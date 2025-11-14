@@ -1,0 +1,67 @@
+/* -- */
+
+import Foundation
+
+internal import LiveKitWebRTC
+
+@objc
+public protocol VideoTrackProtocol: AnyObject, Sendable {
+    @objc(addVideoRenderer:)
+    func add(videoRenderer: VideoRenderer)
+
+    @objc(removeVideoRenderer:)
+    func remove(videoRenderer: VideoRenderer)
+}
+
+public typealias VideoTrack = Track & VideoTrackProtocol
+
+// Directly add/remove renderers for better performance
+protocol VideoTrack_Internal where Self: Track {
+    func add(rtcVideoRenderer: LKRTCVideoRenderer)
+
+    func remove(rtcVideoRenderer: LKRTCVideoRenderer)
+}
+
+extension VideoTrackProtocol where Self: Track {
+    // Update a single SubscribedCodec
+    func _set(subscribedCodec: Livekit_SubscribedCodec) throws -> Bool {
+        guard let videoCodec = VideoCodec.from(name: subscribedCodec.codec) else { return false }
+
+        // Check if main sender is sending the codec...
+        if let rtpSender = _state.rtpSender, videoCodec == _state.videoCodec {
+            rtpSender._set(subscribedQualities: subscribedCodec.qualities)
+            return true
+        }
+
+        // Find simulcast sender for codec...
+        if let rtpSender = _state.rtpSenderForCodec[videoCodec] {
+            rtpSender._set(subscribedQualities: subscribedCodec.qualities)
+            return true
+        }
+
+        return false
+    }
+
+    // Update an array of SubscribedCodecs
+    func _set(subscribedCodecs: [Livekit_SubscribedCodec]) throws -> [Livekit_SubscribedCodec] {
+        var missingCodecs: [Livekit_SubscribedCodec] = []
+
+        for subscribedCodec in subscribedCodecs {
+            let didUpdate = try _set(subscribedCodec: subscribedCodec)
+            if !didUpdate {
+                log("Sender for codec \(subscribedCodec.codec) not found", .info)
+                missingCodecs.append(subscribedCodec)
+            }
+        }
+
+        return missingCodecs
+    }
+}
+
+public extension Track {
+    /// The aspect ratio of the video track or 1 if the dimensions are not available.
+    var aspectRatio: CGFloat {
+        guard let dimensions else { return 1 }
+        return CGFloat(dimensions.width) / CGFloat(dimensions.height)
+    }
+}

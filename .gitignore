@@ -1,0 +1,15 @@
+.DS_Store
+/.build
+/build
+/Packages
+/*.xcodeproj
+.swiftpm/
+xcuserdata/
+xcshareddata/
+Package.resolved
+Documentation
+# DocC
+/build_docs/
+*.doccarchive
+# Local WebRTC
+LiveKitWebRTC.xcframework
