@@ -1,0 +1,24 @@
+import Foundation
+
+//
+// Read http://www.russbishop.net/the-law for more information on why this is necessary
+//
+class UnfairLock {
+    private var _lock: UnsafeMutablePointer<os_unfair_lock>
+
+    init() {
+        _lock = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: 1)
+        _lock.initialize(to: os_unfair_lock())
+    }
+
+    deinit {
+        _lock.deinitialize(count: 1)
+        _lock.deallocate()
+    }
+
+    func sync<Result>(_ fnc: () throws -> Result) rethrows -> Result {
+        os_unfair_lock_lock(_lock)
+        defer { os_unfair_lock_unlock(_lock) }
+        return try fnc()
+    }
+}

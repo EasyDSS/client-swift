@@ -1,0 +1,3 @@
+--exclude Sources/LiveKit/Protos
+--header strip
+--ifdef no-indent
