@@ -2,15 +2,15 @@ Pod::Spec.new do |spec|
   spec.name = "EasyRtcClient"
   spec.version = "2.0.18"
   spec.summary = "EasyRTC Swift Client SDK. Easily build live audio or video into your app."
-  spec.homepage = "https://github.com/EasyDSS/client-sdk-swift"
-  spec.license = {:type => "Apache 2.0", :file => "LICENSE"}
+  spec.homepage = "https://github.com/EasyDSS/client-swift"
+  spec.license = {:type => "MIT", :file => "LICENSE"}
   spec.author = "EasyRTC"
 
   spec.ios.deployment_target = "13.0"
   spec.osx.deployment_target = "10.15"
 
   spec.swift_versions = ["5.7"]
-  spec.source = {:git => "https://github.com/livekit/client-sdk-swift.git", :tag => "2.0.18"}
+  spec.source = {:git => "https://github.com/EasyDSS/client-swift.git", :tag => "2.0.18"}
 
   spec.source_files = "Sources/**/*"
 
